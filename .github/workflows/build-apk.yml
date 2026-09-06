@@ -1,4 +1,0 @@
-git rm .github/workflows/build-apk.yml
-git add .
-git commit -m "hapus workflow duplikat"
-git push origin main
