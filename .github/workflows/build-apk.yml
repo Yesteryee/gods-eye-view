@@ -1,41 +1,4 @@
-name: Build APK
-on: [push, workflow_dispatch]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Install and Build
-        run: |
-          npm install
-          npm run build
-      - name: Patch Voice Error
-        run: |
-          python3 -c "import pathlib; p=pathlib.Path('dist/index.html'); t=p.read_text(); inj='<style>.voice-system-error{display:none!important}</style><script>window.fetch=(function(o){return async function(){var u=(arguments[0]||\"\").toString();if(u.includes(\"realtime\")){return new Response(\"{}\",{status:200})}return o.apply(this,arguments)}})(window.fetch);</script>'; p.write_text(t.replace('</head>', inj+'</head>'))"
-      - name: Setup Capacitor
-        run: |
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-          rm -rf android
-          npx cap init GodsEye com.godseye.app --web-dir=dist
-          npx cap add android
-          npx cap copy android
-      - name: Fix Kotlin
-        run: |
-          echo "configurations.implementation { exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'; exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8' }" >> android/app/build.gradle
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
-      - uses: android-actions/setup-android@v3
-      - name: Build APK
-        run: |
-          cd android
-          chmod +x gradlew
-         ./gradlew assembleDebug
-      - uses: actions/upload-artifact@v4
-        with:
-          name: GodsEye-APK-LITE
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+git rm .github/workflows/build-apk.yml
+git add .
+git commit -m "hapus workflow duplikat"
+git push origin main
