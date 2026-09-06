@@ -26,12 +26,6 @@ jobs:
           npx cap add android
           npx cap copy android
 
-      - name: Fix Kotlin duplicate for Java 21
-        run: |
-          sed -i "s/kotlin_version = '.*'/kotlin_version = '1.9.10'/" android/build.gradle
-          echo "Fix applied:"
-          cat android/build.gradle | grep kotlin
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -45,7 +39,7 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
