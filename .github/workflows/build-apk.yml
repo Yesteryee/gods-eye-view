@@ -8,20 +8,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install and Build Web
+      - name: Install and Build
         run: |
           npm install
           npm run build
       - name: Patch Voice Error
         run: |
-          python3 -c "
-          import pathlib, glob
-          html = pathlib.Path('dist/index.html').read_text()
-          inject = '''<style>.voice-system-error{display:none!important}</style><script>window.fetch=(function(o){return async function(){var u=(arguments[0]||'').toString();if(u.includes('realtime')){return new Response('{}',{status:200})}return o.apply(this,arguments)}})(window.fetch);</script>'''
-          html = html.replace('</head>', inject + '</head>')
-          pathlib.Path('dist/index.html').write_text(html)
-          print('patched')
-          "
+          python3 -c "import pathlib; p=pathlib.Path('dist/index.html'); t=p.read_text(); inj='<style>.voice-system-error{display:none!important}</style><script>window.fetch=(function(o){return async function(){var u=(arguments[0]||\"\").toString();if(u.includes(\"realtime\")){return new Response(\"{}\",{status:200})}return o.apply(this,arguments)}})(window.fetch);</script>'; p.write_text(t.replace('</head>', inj+'</head>'))"
       - name: Setup Capacitor
         run: |
           npm install @capacitor/core @capacitor/cli @capacitor/android
@@ -29,7 +22,7 @@ jobs:
           npx cap init GodsEye com.godseye.app --web-dir=dist
           npx cap add android
           npx cap copy android
-      - name: Fix Kotlin Duplicate
+      - name: Fix Kotlin
         run: |
           echo "configurations.implementation { exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'; exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8' }" >> android/app/build.gradle
       - uses: actions/setup-java@v4
